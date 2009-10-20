@@ -1,0 +1,93 @@
+class Parser
+  token SMALR_THAN BIGR_THAN NOT_SMALR_THAN NOT_BIGR_THAN LIEK NOT_LIEK IZ NOWAI YARLY VISIBLE KTHXBYE BYES DIAF GTFO HAI CAN_HAS_STDIO IM_IN_YR_LOOP KTHX UPZ NERFZ TIEMZD OVARZ I_HAS_A ITZ NERF TIEMZ OVAR LOL R LINE WORD LETTAR GIMMEH OUTTA VARIABLE NUMBAR YARN UP EOS
+
+  prechigh
+  left TIEMZ OVAR
+  left UP NERF
+  left BIGR_THAN SMALR_THAN NOT_SMALR_THAN NOT_BIGR_THAN NOT_LIEK LIEK
+  preclow
+
+  rule
+
+  program
+  : HAI EOS statement_list EOS KTHXBYE EOS { @tree = val[2] }
+  ;
+
+  statement_list
+  : statement_list EOS statement { result = val[2] ? val[0] + [val[2]] : val[0] }
+  | statement { result = [val[0]] }
+  ;
+
+  statement
+  : expression
+  | VISIBLE expression '!' { result = [:print, val[1]] }
+  | VISIBLE expression { result = [:printline, val[1]] }
+  | LOL VARIABLE R expression { result = [:assign, val[1], val[3]] }
+  | IZ expression optional_question_mark statement KTHX { result = [:if, val[1], [val[3]]] }
+  | IZ expression optional_question_mark EOS YARLY EOS statement_list EOS KTHX { result = [:if, val[1], val[6]] }
+  | IZ expression optional_question_mark EOS YARLY EOS statement_list EOS NOWAI EOS statement_list EOS KTHX { result = [:if, val[1], val[6], val[10]] }
+  | CAN_HAS_STDIO '?' { result = [:stdio] }
+  | GTFO { result = [:break] }
+  | IM_IN_YR_LOOP EOS statement_list EOS KTHX { result = [:loop, val[2]] }
+  | UPZ VARIABLE '!' '!' { result = [:"+=", val[1], 1] }
+  | UPZ VARIABLE '!' '!' expression { result = [:"+=", val[1], val[4]] }
+  | NERFZ VARIABLE '!' '!' { result = [:"-=", val[1], 1] }
+  | NERFZ VARIABLE '!' '!' expression { result = [:"-=", val[1], val[4]] }
+  | OVARZ VARIABLE '!' '!' { result = [:"/=", val[1], 1] }
+  | OVARZ VARIABLE '!' '!' expression { result = [:"/=", val[1], val[4]] }
+  | TIEMZD VARIABLE '!' '!' { result = [:"*=", val[1], 1] }
+  | TIEMZD VARIABLE '!' '!' expression { result = [:"*=", val[1], val[4]] }
+  | I_HAS_A VARIABLE ITZ expression { result = [:define, val[1], val[3]] }
+  | I_HAS_A VARIABLE { result = [:declare, val[1]] }
+  | GIMMEH VARIABLE { result = [:getline, val[1]] }
+  | GIMMEH LINE VARIABLE { result = [:getline, val[2]] }
+  | GIMMEH LETTAR VARIABLE { result = [:getchar, val[2]] }
+  | GIMMEH WORD VARIABLE { result = [:getword, val[2]] }
+  | DIAF { result = [:exit, 0] }
+  | DIAF NUMBAR { result = [:exit, val[1]] }
+  | DIAF NUMBAR YARN { result = [:exit, val[1], val[2]] }
+  ;
+
+  expression
+  : NUMBAR
+  | VARIABLE { result = [:var, val[0]] }
+  | YARN
+  | expression UP expression { result = [:"+", val[0], val[2]] }
+  | expression NERF expression { result = [:"-", val[0], val[2]] }
+  | expression TIEMZ expression { result = [:"*", val[0], val[2]] }
+  | expression OVAR expression { result = [:"/", val[0], val[2]] }
+  | expression BIGR_THAN expression { result = [:">", val[0], val[2]] }
+  | expression SMALR_THAN expression { result = [:"<", val[0], val[2]] }
+  | expression NOT_SMALR_THAN expression { result = [:">=", val[0], val[2]] }
+  | expression NOT_BIGR_THAN expression { result = [:"<=", val[0], val[2]] }
+  | expression NOT_LIEK expression { result = [:"!=", val[0], val[2]] }
+  | expression LIEK expression { result = [:"==", val[0], val[2]] }
+  ;
+
+  optional_question_mark
+  : '?'
+  |
+  ;
+
+end
+
+---- inner
+def parse(src)
+  @lexer = Lexer.new(src)
+  @yydebug = true
+  do_parse
+end
+
+def parse_and_execute(src)
+  parse(src)
+  Lol.new(@tree).execute
+end
+
+def parse_and_print(src)
+  parse(src)
+  p @tree
+end
+
+def next_token
+  @lexer.next_token
+end

@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'rubygems'
 require 'rake'
 
@@ -9,7 +11,7 @@ begin
     gem.description = %Q{TODO: longer description of your gem}
     gem.email = "qoobaa+github@gmail.com"
     gem.homepage = "http://github.com/qoobaa/lol"
-    gem.authors = ["Jakub Kuźma"]
+    gem.authors = ["Jakub Kuźma", "Szymon Kunc"]
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

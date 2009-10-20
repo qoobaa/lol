@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "lol"
+
+if ARGV[0] == "-t"
+  Parser.new.parse_and_print(open(ARGV[1]).read)
+elsif ARGV[0].nil?
+  puts "no file given"
+else
+  Parser.new.parse_and_execute(open(ARGV[0]).read)
+end
